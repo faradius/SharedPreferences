@@ -3,10 +3,13 @@ package com.alex.sharedpreferences
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.widget.Toast
 import com.alex.sharedpreferences.UserVipAplication.Companion.prefs
 import com.alex.sharedpreferences.databinding.ActivityMainBinding
+import com.google.gson.Gson
+import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -16,6 +19,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         initUI()
         checkUserValues()
+
+
     }
 
     fun initUI(){
@@ -28,12 +33,24 @@ class MainActivity : AppCompatActivity() {
             prefs.saveVip(binding.cbVip.isChecked)
             goToDetail()
         }else{
-            Toast.makeText(this, "Debes poner tu nombre", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(this, "Debes poner tu nombre", Toast.LENGTH_SHORT).show()
+            val jsonUser = JSONObject()
+            jsonUser.put("name", "Victor")
+            jsonUser.put("age", 25)
+
+            val gson = Gson()
+            val user = gson.fromJson(jsonUser.toString(),User::class.java)
+//            Log.d("TAG", "onCreate: $user")
+            prefs.saveObject(user)
+            goToDetail()
+
         }
     }
 
     fun checkUserValues(){
         if (prefs.getName().isNotEmpty()){
+            goToDetail()
+        }else if (prefs.getObject().isNotEmpty()){
             goToDetail()
         }
     }
